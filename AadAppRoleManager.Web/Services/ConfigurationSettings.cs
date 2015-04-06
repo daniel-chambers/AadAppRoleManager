@@ -1,3 +1,4 @@
+using System;
 using System.Configuration;
 
 namespace AadAppRoleManager.Web.Services
@@ -17,6 +18,11 @@ namespace AadAppRoleManager.Web.Services
         public string AadAppKey
         {
             get { return ConfigurationManager.AppSettings["ida:AppKey"]; }
+        }
+
+        public TimeZoneInfo LocalTimeZoneInfo
+        {
+            get { return TimeZoneInfo.FindSystemTimeZoneById(ConfigurationManager.AppSettings["LocalTimeZoneSystemId"]); }
         }
     }
 }

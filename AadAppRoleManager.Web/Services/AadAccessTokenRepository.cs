@@ -21,9 +21,14 @@ namespace AadAppRoleManager.Web.Services
 
         public async Task<string> GetAccessTokenAsync()
         {
-            var clientCreds = new ClientCredential(_configuration.AadClientId, _configuration.AadAppKey);
-            var result = await _authContext.AcquireTokenSilentAsync(GraphResourceId, clientCreds, new UserIdentifier(_userObjectId, UserIdentifierType.UniqueId));
+            var result = await GetAuthenticationResultAsync();
             return result.AccessToken;
+        }
+
+        public async Task<AuthenticationResult> GetAuthenticationResultAsync()
+        {
+            var clientCreds = new ClientCredential(_configuration.AadClientId, _configuration.AadAppKey);
+            return await _authContext.AcquireTokenSilentAsync(GraphResourceId, clientCreds, new UserIdentifier(_userObjectId, UserIdentifierType.UniqueId));
         }
     }
 }

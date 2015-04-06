@@ -1,3 +1,5 @@
+using System;
+
 namespace AadAppRoleManager.Web.Services
 {
     public interface IConfigurationSettings
@@ -5,5 +7,6 @@ namespace AadAppRoleManager.Web.Services
         string StorageAccountConnectionString { get; }
         string AadClientId { get; }
         string AadAppKey { get; }
+        TimeZoneInfo LocalTimeZoneInfo { get; }
     }
 }

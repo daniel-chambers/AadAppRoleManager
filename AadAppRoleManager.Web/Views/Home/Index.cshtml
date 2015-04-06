@@ -9,6 +9,10 @@
     {
         <p><a href="@Url.Action("Index", "Application")" class="btn btn-primary btn-lg">Applications &raquo;</a></p>
         <p><a href="https://myapps.microsoft.com" class="btn btn-warning btn-lg">Deauthorization &raquo;</a></p>
+        <small>
+            Token Expires UTC: @ViewBag.TokenExpiryUtc<br/>
+            Token Expires Local: @ViewBag.TokenExpiryLocal
+        </small>
     }
     else
     {
