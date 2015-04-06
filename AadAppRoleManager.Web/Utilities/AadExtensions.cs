@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ActiveDirectory.GraphClient;
 using Microsoft.Azure.ActiveDirectory.GraphClient.Extensions;
 
-namespace AadAppRoleManager.Web.Controllers
+namespace AadAppRoleManager.Web.Utilities
 {
     public static class AadExtensions
     {

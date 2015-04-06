@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Configuration;
-using System.IdentityModel.Claims;
 using System.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using System.Web;
-using AadAppRoleManager.Web.Models;
-using Microsoft.Ajax.Utilities;
+using System.Web.Mvc;
+using AadAppRoleManager.Web.Modules;
+using AadAppRoleManager.Web.Utilities;
+using Autofac;
+using Autofac.Integration.Mvc;
+using Autofac.Integration.Owin;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using Owin;
-using AuthenticationContext = Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext;
 
 [assembly: OwinStartup(typeof(AadAppRoleManager.Web.Startup))]
 
 namespace AadAppRoleManager.Web
 {
-    public static class AadClaimTypes
-    {
-        public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-        public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
-    }
-
     public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
+            var container = new IoC().BuildContainer();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+
+            app.UseAutofacMiddleware(container);
+
             ConfigureAuth(app);
         }
 
@@ -62,7 +63,7 @@ namespace AadAppRoleManager.Web
                         var tenantId = context.AuthenticationTicket.Identity.FindFirst(AadClaimTypes.TenantId).Value;
                         var userObjectId = context.AuthenticationTicket.Identity.FindFirst(AadClaimTypes.ObjectId).Value;
 
-                        var authContext = new AuthenticationContext(string.Format("https://login.microsoftonline.com/" + tenantId), new TableStorageTokenCache(tenantId, userObjectId));
+                        var authContext = context.OwinContext.GetAutofacLifetimeScope().Resolve<AuthenticationContextFactory>()(tenantId, userObjectId);
                         //This causes the token to be acquired and stored in table storage via the token cache
                         await authContext.AcquireTokenByAuthorizationCodeAsync(code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
                     },

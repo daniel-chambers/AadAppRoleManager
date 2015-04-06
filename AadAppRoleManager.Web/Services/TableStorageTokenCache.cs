@@ -1,18 +1,10 @@
-﻿using System;
-using System.Configuration;
 using System.Linq;
-using System.Net;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace AadAppRoleManager.Web.Models
+namespace AadAppRoleManager.Web.Services
 {
-    public class AadUserTokenCacheEntry : TableEntity
-    {
-        public byte[] CacheData { get; set; }
-    }
-
     public class TableStorageTokenCache : TokenCache
     {
         private readonly string _tenantId;
@@ -20,12 +12,12 @@ namespace AadAppRoleManager.Web.Models
         private readonly CloudTable _table;
         private AadUserTokenCacheEntry _entry;
 
-        public TableStorageTokenCache(string tenantId, string userObjectId)
+        public TableStorageTokenCache(string tenantId, string userObjectId, CloudStorageAccount cloudStorageAccount)
         {
             _tenantId = tenantId;
             _userObjectId = userObjectId;
-            var tableClient = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["StorageAccount"].ConnectionString).CreateCloudTableClient();
-            _table = tableClient.GetTableReference("AadUserTokenCacheEntries");
+            var tableClient = cloudStorageAccount.CreateCloudTableClient();
+            _table = tableClient.GetTableReference(TableNames.AadUserTokenCacheEntries);
 
             BeforeAccess = OnBeforeAccess;
             AfterAccess = OnAfterAccess;

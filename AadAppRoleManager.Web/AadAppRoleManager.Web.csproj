@@ -46,6 +46,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc">
+      <HintPath>..\packages\Autofac.Mvc5.3.3.3\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Owin">
+      <HintPath>..\packages\Autofac.Owin.3.1.0\lib\net45\Autofac.Integration.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.ActiveDirectory.GraphClient">
       <HintPath>..\packages\Microsoft.Azure.ActiveDirectory.GraphClient.2.0.6\lib\portable-net40+wp8+win8+MonoAndroid10+MonoTouch10+WindowsPhoneApp81\Microsoft.Azure.ActiveDirectory.GraphClient.dll</HintPath>
     </Reference>
@@ -170,17 +180,31 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\AadExtensions.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ApplicationController.cs" />
-    <Compile Include="Controllers\FunctionalExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AadUserTokenCacheEntry.cs" />
+    <Compile Include="Models\AppRoleViewModel.cs" />
+    <Compile Include="Models\AssignmentType.cs" />
+    <Compile Include="Models\CreateAssignmentViewModel.cs" />
+    <Compile Include="Modules\ActiveDirectoryClientModule.cs" />
+    <Compile Include="Modules\IoC.cs" />
+    <Compile Include="Modules\ServicesModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AadAccessTokenRepository.cs" />
+    <Compile Include="Services\AadUserTokenCacheEntry.cs" />
+    <Compile Include="Services\ConfigurationSettings.cs" />
+    <Compile Include="Services\IAadAccessTokenRepository.cs" />
+    <Compile Include="Services\IConfigurationSettings.cs" />
+    <Compile Include="Services\InitializationService.cs" />
+    <Compile Include="Services\TableNames.cs" />
+    <Compile Include="Services\TableStorageTokenCache.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\AadClaimTypes.cs" />
+    <Compile Include="Utilities\AadExtensions.cs" />
+    <Compile Include="Utilities\FunctionalExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />

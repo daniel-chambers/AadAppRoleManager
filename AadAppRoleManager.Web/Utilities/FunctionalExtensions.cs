@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AadAppRoleManager.Web.Controllers
+namespace AadAppRoleManager.Web.Utilities
 {
     public static class FunctionalExtensions
     {

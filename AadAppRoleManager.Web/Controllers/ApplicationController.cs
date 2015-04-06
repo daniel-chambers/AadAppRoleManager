@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,20 +6,27 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AadAppRoleManager.Web.Models;
+using AadAppRoleManager.Web.Modules;
+using AadAppRoleManager.Web.Services;
+using AadAppRoleManager.Web.Utilities;
 using Microsoft.Azure.ActiveDirectory.GraphClient;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace AadAppRoleManager.Web.Controllers
 {
     [Authorize]
     public class ApplicationController : Controller
     {
-        private const string GraphResourceId = "https://graph.windows.net";
+        private readonly ActiveDirectoryClientFactory _activeDirectoryClientFactory;
+        private readonly AadAccessTokenRepositoryFactory _aadAccessTokenRepositoryFactory;
         private IActiveDirectoryClient _client;
+        private IAadAccessTokenRepository _aadAccessTokenRepository;
 
-        public ApplicationController()
+        public ApplicationController(
+            ActiveDirectoryClientFactory activeDirectoryClientFactory,
+            AadAccessTokenRepositoryFactory aadAccessTokenRepositoryFactory)
         {
-            
+            _activeDirectoryClientFactory = activeDirectoryClientFactory;
+            _aadAccessTokenRepositoryFactory = aadAccessTokenRepositoryFactory;
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -31,10 +35,10 @@ namespace AadAppRoleManager.Web.Controllers
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var tenantId = claimsIdentity.FindFirst(AadClaimTypes.TenantId).Value;
+            var userObjectId = claimsIdentity.FindFirst(AadClaimTypes.ObjectId).Value;
 
-            _client = new ActiveDirectoryClient(
-                new Uri(GraphResourceId + "/" + tenantId),
-                GetAccessTokenAsync);
+            _client = _activeDirectoryClientFactory(tenantId, userObjectId);
+            _aadAccessTokenRepository = _aadAccessTokenRepositoryFactory(tenantId, userObjectId);
         }
 
         public async Task<ActionResult> Index()
@@ -149,7 +153,7 @@ namespace AadAppRoleManager.Web.Controllers
                 .ExecuteSingleAsync();
 
             //Can't figure out how to delete stuff using the API, so we're doing it LIVE, cough, manually.
-            var token = await GetAccessTokenAsync();
+            var token = await _aadAccessTokenRepository.GetAccessTokenAsync();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -169,45 +173,5 @@ namespace AadAppRoleManager.Web.Controllers
 
             return RedirectToAction("AppRole", new { applicationId, appRoleId });
         }
-
-        private async Task<string> GetAccessTokenAsync()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var tenantId = claimsIdentity.FindFirst(AadClaimTypes.TenantId).Value;
-            var userObjectId = claimsIdentity.FindFirst(AadClaimTypes.ObjectId).Value;
-
-            var clientCreds = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:AppKey"]);
-            var authContext = new AuthenticationContext(string.Format("https://login.microsoftonline.com/{0}", tenantId), new TableStorageTokenCache(tenantId, userObjectId));
-            var result = await authContext.AcquireTokenSilentAsync(GraphResourceId, clientCreds, new UserIdentifier(userObjectId, UserIdentifierType.UniqueId));
-            return result.AccessToken;
-        }
-    }
-
-    public class AppRoleViewModel
-    {
-        public IApplication Application { get; set; }
-        public IServicePrincipal ServicePrincipal { get; set; }
-        public List<IAppRoleAssignment> AppRoleAssignments { get; set; }
-        public AppRole AppRole { get; set; }
-    }
-
-    public class CreateAssignmentViewModel
-    {
-        public IApplication Application { get; set; }
-        public AppRole AppRole { get; set; }
-
-        [Required]
-        [Display(Name = "Type")]
-        public AssignmentType AssignmentType { get; set; }
-
-        [Required]
-        [Display(Name = "Object ID")]
-        public Guid? ObjectId { get; set; }
-    }
-
-    public enum AssignmentType
-    {
-        Group,
-        User
     }
 }
