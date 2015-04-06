@@ -1,0 +1,22 @@
+﻿@model Microsoft.Azure.ActiveDirectory.GraphClient.IApplication
+
+@{
+    ViewBag.Title = "Application";
+}
+
+<h2>@Model.DisplayName</h2>
+
+<dl>
+    <dt>Object ID</dt>
+    <dd>@Model.ObjectId</dd>
+
+    <dt>App Roles</dt>
+    <dd>
+        <ul>
+            @foreach (var appRole in Model.AppRoles)
+            {
+                <li>@Html.ActionLink(appRole.DisplayName, "AppRole", new { applicationId = Model.ObjectId, appRoleId = appRole.Id })</li>
+            }
+        </ul>
+    </dd>
+</dl>

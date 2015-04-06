@@ -1,0 +1,33 @@
+﻿@model AadAppRoleManager.Web.Controllers.CreateAssignmentViewModel
+
+@{
+    ViewBag.Title = "Create Assignment";
+}
+
+<h2>Create Assignment</h2>
+
+<dl>
+    <dt>Application</dt>
+    <dd>@Model.Application.DisplayName</dd>
+
+    <dt>AppRole</dt>
+    <dd>@Model.AppRole.DisplayName</dd>
+</dl>
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.AssignmentType)
+        @Html.EnumDropDownListFor(m => m.AssignmentType, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.AssignmentType)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ObjectId)
+        @Html.TextBoxFor(m => m.ObjectId, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ObjectId)
+    </div>
+    
+    <input type="submit" class="btn btn-primary" value="Create"/>
+}
+

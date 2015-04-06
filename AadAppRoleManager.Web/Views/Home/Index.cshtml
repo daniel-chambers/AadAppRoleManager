@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>AAD AppRole Manager</h1>
+    <p class="lead">AAD AppRole Manager lets you view and edit App Role assignments for Applications registered in Azure Active Directory.</p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <p><a href="@Url.Action("Index", "Application")" class="btn btn-primary btn-lg">Applications &raquo;</a></p>
+    }
+    else
+    {
+        <p><a href="@Url.Action("SignIn", "Account")" class="btn btn-primary btn-lg">Sign in &raquo;</a></p>
+    }
+</div>

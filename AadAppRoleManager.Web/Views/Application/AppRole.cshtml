@@ -1,0 +1,55 @@
+﻿@model AadAppRoleManager.Web.Controllers.AppRoleViewModel
+
+@{
+    ViewBag.Title = "Application";
+}
+
+<h2>@Model.AppRole.DisplayName - @Model.Application.DisplayName</h2>
+
+<dl>
+    <dt>ID</dt>
+    <dd>@Model.AppRole.Id</dd>
+
+    <dt>Description</dt>
+    <dd>@Model.AppRole.Description</dd>
+
+    <dt>Is Enabled</dt>
+    <dd>@Model.AppRole.IsEnabled</dd>
+
+    <dt>Value</dt>
+    <dd>@Model.AppRole.Value</dd>
+</dl>
+
+<h3>Assignments</h3>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Object ID</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var assignment in Model.AppRoleAssignments)
+    {
+        <tr>
+            <td>@assignment.PrincipalType</td>
+            <td>@assignment.PrincipalDisplayName</td>
+            <td>@assignment.PrincipalId</td>
+            <td>
+                @using (Html.BeginForm(new { action = "DeleteAssignment", applicationId = Model.Application.ObjectId, appRoleId = Model.AppRole.Id, assignmentId = assignment.ObjectId }))
+                {
+                    <button class="btn btn-danger" onclick="javascript:return confirm('Are you sure you want to delete this assignment?');">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                }
+                
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a href="@Url.Action("CreateAssignment", new { applicationId = Model.Application.ObjectId, appRoleId = Model.AppRole.Id })" class="btn btn-primary">Create Assignment</a>
+
